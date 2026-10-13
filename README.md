@@ -14,6 +14,13 @@ npm run dev
 
 Then open http://localhost:5180
 
+## Deploy (GitHub Pages)
+
+Every push to `main` builds and publishes the app via `.github/workflows/deploy.yml`.
+
+One-time setup after creating the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+The site is then served at `https://<user>.github.io/<repo>/` (the build uses relative paths, so any repo name works).
+
 ## Features
 
 - **Pick your set** – tap single characters, a whole row (row label), or every row up
