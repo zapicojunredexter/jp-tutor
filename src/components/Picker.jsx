@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { SCRIPTS, CHAR_BY_ID } from '../data/kana'
 import { isWeak, masteryLevel, MASTERY_LABELS } from '../lib/storage'
-import { IconChevron, IconPlay, IconThrough } from './Icons'
+import { IconArrowLeft, IconCards, IconChevron, IconChoice, IconKeyboard, IconPen, IconPlay, IconThrough } from './Icons'
 import Segmented from './Segmented'
 
+// `directional` modes let the learner pick kana → romaji or romaji → kana
 const MODES = [
-  { id: 'flash', title: 'Flashcards', desc: 'Flip the card, then say if you knew it' },
-  { id: 'choice', title: 'Multiple choice', desc: 'Pick the answer from 4 options' },
-  { id: 'type', title: 'Type it', desc: 'Type the romaji for each kana' },
+  { id: 'flash', title: 'Flashcards', Icon: IconCards, directional: true, desc: 'Flip each card, then say whether you knew it.' },
+  { id: 'choice', title: 'Choose', Icon: IconChoice, directional: true, desc: 'Pick the right answer from 4 options.' },
+  { id: 'type', title: 'Type it', Icon: IconKeyboard, desc: 'See the kana, type how it sounds (romaji).' },
+  { id: 'write', title: 'Write it', Icon: IconPen, desc: 'See the sound, draw the kana. Stroke order is checked.' },
 ]
 
 export default function Picker({ selection, setSelection, stats, onClearWeak, settings, setSettings, onStart }) {
@@ -37,22 +39,23 @@ export default function Picker({ selection, setSelection, stats, onClearWeak, se
     if (ok) onClearWeak(weakIds)
   }
 
-  const typeMode = settings.mode === 'type'
+  const mode = MODES.find((m) => m.id === settings.mode) ?? MODES[0]
 
   return (
     <div className="picker">
-      <header className="hero">
-        <div className="hero-mark" aria-hidden>
-          かな
-        </div>
-        <div>
-          <h1>Kana Practice</h1>
-          <p>Pick the characters you’re learning, then practice just those. Take it slow — there’s no timer.</p>
-        </div>
-      </header>
-
       <div className="picker-layout">
         <main className="chart-area">
+          {/* Header lives in the left column so the setup panel can start at the very top */}
+          <header className="hero">
+            <div className="hero-mark" aria-hidden>
+              かな
+            </div>
+            <div>
+              <h1>Kana Practice</h1>
+              <p>Pick the characters you’re learning, then practice just those. Take it slow — there’s no timer.</p>
+            </div>
+          </header>
+
           <div className="chart-toolbar">
             <div className="script-tabs" role="tablist" aria-label="Writing system">
               {Object.values(SCRIPTS).map((s) => (
@@ -104,89 +107,121 @@ export default function Picker({ selection, setSelection, stats, onClearWeak, se
           </div>
         </main>
 
-        <aside className="setup card">
-          <h2>Your practice set</h2>
-          {selection.size === 0 ? (
-            <p className="muted empty-deck">Nothing picked yet. Choose a few characters from the chart — even 5 is a great start.</p>
-          ) : (
-            <div className="deck-preview jp" aria-label={`${selection.size} characters selected`}>
-              {selectedIds.slice(0, 48).map((id) => (
-                <span key={id} className="deck-chip">
-                  {CHAR_BY_ID[id]?.kana}
-                </span>
-              ))}
-              {selection.size > 48 && <span className="deck-chip more">+{selection.size - 48}</span>}
-            </div>
-          )}
+        <aside className="setup card" id="practice-setup" aria-label="Practice setup">
+          <div className="setup-body">
+            <section className="setup-step">
+              <h2 className="step-title">
+                <span className="step-num">1</span> Your characters
+                {selection.size > 0 && <span className="step-count">{selection.size}</span>}
+              </h2>
+              {selection.size === 0 ? (
+                <p className="empty-deck">
+                  <IconArrowLeft width={16} height={16} className="empty-arrow" />
+                  Tap characters in the chart to add them. Even 5 is a great start.
+                </p>
+              ) : (
+                <div className="deck-preview jp" aria-label={`${selection.size} characters selected`}>
+                  {selectedIds.slice(0, 23).map((id) => (
+                    <span key={id} className="deck-chip">
+                      {CHAR_BY_ID[id]?.kana}
+                    </span>
+                  ))}
+                  {selection.size > 23 && <span className="deck-chip more">+{selection.size - 23}</span>}
+                </div>
+              )}
+            </section>
 
-          <fieldset className="field">
-            <legend>How do you want to practice?</legend>
-            <div className="mode-list">
-              {MODES.map((m) => (
-                <label key={m.id} className={`mode-option ${settings.mode === m.id ? 'active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="mode"
-                    value={m.id}
-                    checked={settings.mode === m.id}
-                    onChange={() => setSettings({ ...settings, mode: m.id })}
+            <fieldset className="setup-step">
+              <legend className="step-title">
+                <span className="step-num">2</span> How to practice
+              </legend>
+              <div className="mode-grid">
+                {MODES.map(({ id, title, Icon }) => (
+                  <label key={id} className={`mode-tile ${mode.id === id ? 'active' : ''}`}>
+                    <input
+                      type="radio"
+                      name="mode"
+                      value={id}
+                      checked={mode.id === id}
+                      onChange={() => setSettings({ ...settings, mode: id })}
+                    />
+                    <Icon width={20} height={20} />
+                    <span>{title}</span>
+                  </label>
+                ))}
+              </div>
+              <p className="mode-explain">{mode.desc}</p>
+            </fieldset>
+
+            <section className="setup-step options">
+              <h2 className="step-title">Options</h2>
+              {mode.directional && (
+                <div className="option-row">
+                  <span className="option-label">Show</span>
+                  <Segmented
+                    value={settings.direction}
+                    onChange={(v) => setSettings({ ...settings, direction: v })}
+                    options={[
+                      { value: 'kana', label: <><span className="jp">あ</span> → a</> },
+                      { value: 'romaji', label: <>a → <span className="jp">あ</span></> },
+                    ]}
                   />
-                  <span className="mode-title">{m.title}</span>
-                  <span className="mode-desc">{m.desc}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="field">
-            <span className="field-label">Show me</span>
-            <Segmented
-              value={typeMode ? 'kana' : settings.direction}
-              onChange={(v) => setSettings({ ...settings, direction: v })}
-              disabled={typeMode}
-              options={[
-                { value: 'kana', label: <><span className="jp">あ</span> → a</> },
-                { value: 'romaji', label: <>a → <span className="jp">あ</span></> },
-              ]}
-            />
-            {typeMode && <small className="muted">Typing mode always shows the kana.</small>}
+                </div>
+              )}
+              <div className="option-row">
+                <span className="option-label">Each card</span>
+                <Segmented
+                  value={settings.repeats}
+                  onChange={(v) => setSettings({ ...settings, repeats: v })}
+                  options={[
+                    { value: 1, label: 'Once' },
+                    { value: 2, label: 'Twice' },
+                  ]}
+                />
+              </div>
+              <label className="switch-row">
+                <span>Play the sound with each answer</span>
+                <input
+                  type="checkbox"
+                  checked={settings.autoSound}
+                  onChange={(e) => setSettings({ ...settings, autoSound: e.target.checked })}
+                />
+                <span className="switch" aria-hidden />
+              </label>
+            </section>
           </div>
 
-          <div className="field">
-            <span className="field-label">Round length</span>
-            <Segmented
-              value={settings.repeats}
-              onChange={(v) => setSettings({ ...settings, repeats: v })}
-              options={[
-                { value: 1, label: 'Each once' },
-                { value: 2, label: 'Each twice' },
-              ]}
-            />
+          {/* Pinned so the main action never scrolls out of view */}
+          <div className="setup-footer">
+            <button className="btn btn-primary btn-start" disabled={selection.size === 0} onClick={onStart}>
+              <IconPlay width={16} height={16} />
+              {selection.size === 0 ? 'Pick characters to start' : 'Start practice'}
+              {selection.size > 0 && <span className="btn-count">{selection.size * settings.repeats} cards</span>}
+            </button>
           </div>
-
-          <label className="switch-row">
-            <input
-              type="checkbox"
-              checked={settings.autoSound}
-              onChange={(e) => setSettings({ ...settings, autoSound: e.target.checked })}
-            />
-            <span className="switch" aria-hidden />
-            <span>Play the sound when the answer shows</span>
-          </label>
-
-          <button className="btn btn-primary btn-start" disabled={selection.size === 0} onClick={onStart}>
-            <IconPlay width={16} height={16} />
-            Start practice
-            {selection.size > 0 && <span className="btn-count">{selection.size * settings.repeats} cards</span>}
-          </button>
         </aside>
       </div>
 
-      {/* Mobile quick-start bar */}
-      <div className={`mobile-bar ${selection.size ? 'show' : ''}`}>
-        <span>
-          <strong>{selection.size}</strong> selected
-        </span>
+      <footer className="credits">
+        Stroke order data from{' '}
+        <a href="https://kanjivg.tagaini.net" target="_blank" rel="noreferrer">
+          KanjiVG
+        </a>{' '}
+        by Ulrich Apel, used under{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">
+          CC BY-SA 3.0
+        </a>
+        .
+      </footer>
+
+      {/* Mobile: the setup panel sits below the long chart, so keep the essentials in reach */}
+      <div className="mobile-bar">
+        <div className="mobile-bar-info">
+          <span>{selection.size === 0 ? 'Tap kana to pick them' : <><strong>{selection.size}</strong> picked</>}</span>
+          <button className="mobile-mode" onClick={() => document.getElementById('practice-setup')?.scrollIntoView({ behavior: 'smooth' })}>
+            <mode.Icon width={14} height={14} /> {mode.title} · change
+          </button>
+        </div>
         <button className="btn btn-primary" onClick={onStart} disabled={!selection.size}>
           Start
         </button>

@@ -2,13 +2,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { buildChoices, checkTyped, requeueIndex, MAX_RETRIES } from '../lib/quiz'
 import { canSpeak, speak } from '../lib/speech'
 import { IconArrowRight, IconCheck, IconClose, IconSound } from './Icons'
+import WritePad from './WritePad'
 
 const PRAISE = ['Nice!', 'That’s it!', 'Yes!', 'Got it!', 'Well done!', 'Spot on!']
 const pick = (list) => list[Math.floor(Math.random() * list.length)]
 
 export default function Quiz({ initialDeck, poolIds, settings, onRecord, onFinish, onExit }) {
   const { mode } = settings
-  const direction = mode === 'type' ? 'kana' : settings.direction
+  // Typing always shows the kana; writing always shows the sound
+  const direction = mode === 'type' ? 'kana' : mode === 'write' ? 'romaji' : settings.direction
 
   const [deck, setDeck] = useState(initialDeck)
   const [index, setIndex] = useState(0)
@@ -99,6 +101,12 @@ export default function Quiz({ initialDeck, poolIds, settings, onRecord, onFinis
     if (correct) advanceTimer.current = setTimeout(next, 900)
   }
 
+  // Writing: the pad reports once every stroke is in; clean = no hints needed
+  const written = ({ clean }) => {
+    answer(clean)
+    if (clean) advanceTimer.current = setTimeout(next, 1400)
+  }
+
   const submitTyped = (e) => {
     e?.preventDefault()
     if (phase === 'answered') return next()
@@ -133,7 +141,7 @@ export default function Quiz({ initialDeck, poolIds, settings, onRecord, onFinis
           e.preventDefault()
           next()
         }
-      } else if (mode === 'type' && !inInput && phase === 'answered' && e.key === 'Enter') {
+      } else if ((mode === 'type' || mode === 'write') && !inInput && phase === 'answered' && e.key === 'Enter') {
         next()
       }
     }
@@ -190,6 +198,13 @@ export default function Quiz({ initialDeck, poolIds, settings, onRecord, onFinis
               </div>
             </div>
           </button>
+        ) : mode === 'write' ? (
+          <div className="write-prompt" key={card.key}>
+            <span className="write-prompt-label">
+              Write in {scriptName}
+            </span>
+            <Prompt text={char.romaji} isKana={false} tag={char.tag} />
+          </div>
         ) : (
           <div className={`prompt-card ${phase === 'answered' ? (lastCorrect ? 'is-correct' : 'is-wrong') : ''}`} key={card.key}>
             <span className="face-script">{scriptName}</span>
@@ -265,11 +280,18 @@ export default function Quiz({ initialDeck, poolIds, settings, onRecord, onFinis
             </form>
           )}
 
+          {mode === 'write' && <WritePad key={card.key} kana={char.kana} onComplete={written} />}
+
           {mode !== 'flash' && phase === 'answered' && (
             <div className={`feedback ${lastCorrect ? 'good' : 'gentle'}`} role="status">
               <div className="feedback-text">
                 {lastCorrect ? (
                   <strong>{praise}</strong>
+                ) : mode === 'write' ? (
+                  <>
+                    <strong>Done, with a little help.</strong> <span className="jp">{char.kana}</span> is <strong>{char.romaji}</strong>.
+                    {card.retry < MAX_RETRIES && <span className="muted"> You’ll write it again soon.</span>}
+                  </>
                 ) : (
                   <>
                     <strong>Not quite.</strong> <span className="jp">{char.kana}</span> is <strong>{char.romaji}</strong>.
@@ -318,6 +340,7 @@ function ShortcutHint({ mode }) {
     flash: 'Space to flip · 1 still learning · 2 knew it',
     choice: 'Press 1–4 to choose',
     type: 'Hepburn or other spellings are fine (shi / si)',
+    write: 'Draw one stroke at a time, in order · mouse, finger or stylus',
   }[mode]
   return <p className="shortcut-hint">{text}</p>
 }

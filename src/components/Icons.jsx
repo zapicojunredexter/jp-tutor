@@ -48,6 +48,37 @@ export const IconChevron = (p) => (
     <path d="m6 9 6 6 6-6" />
   </svg>
 )
+export const IconArrowLeft = (p) => (
+  <svg {...base} {...p}>
+    <path d="M19 12H5M11 18l-6-6 6-6" />
+  </svg>
+)
+export const IconCards = (p) => (
+  <svg {...base} {...p}>
+    <rect x="3" y="6" width="13" height="15" rx="2" />
+    <path d="M8 3h11a2 2 0 0 1 2 2v13" />
+  </svg>
+)
+export const IconChoice = (p) => (
+  <svg {...base} {...p}>
+    <rect x="3" y="3" width="8" height="8" rx="2" />
+    <rect x="13" y="3" width="8" height="8" rx="2" />
+    <rect x="3" y="13" width="8" height="8" rx="2" />
+    <rect x="13" y="13" width="8" height="8" rx="2" />
+  </svg>
+)
+export const IconKeyboard = (p) => (
+  <svg {...base} {...p}>
+    <rect x="2" y="5" width="20" height="14" rx="2" />
+    <path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 13h.01M18 13h.01M8 16h8" />
+  </svg>
+)
+export const IconPen = (p) => (
+  <svg {...base} {...p}>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+  </svg>
+)
 export const IconThrough = (p) => (
   <svg {...base} {...p}>
     <path d="M12 19V5M5 12l7-7 7 7" />
