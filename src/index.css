@@ -76,6 +76,12 @@ kbd {
   font-weight: 500;
 }
 
+/* Plain-HTML intro in index.html, shown to crawlers / before the app starts */
+.static-intro { max-width: 720px; margin: 0 auto; padding: 48px 20px; color: var(--ink-2); }
+.static-intro h1 { font-size: 28px; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 12px; }
+.static-intro h2 { font-size: 17px; color: var(--ink); margin: 24px 0 8px; }
+.static-intro li { margin-bottom: 6px; }
+
 .app { max-width: 1180px; margin: 0 auto; padding: 24px 20px 96px; }
 
 .card {

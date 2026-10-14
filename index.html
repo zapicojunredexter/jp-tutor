@@ -2,15 +2,87 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Search & sharing. The site's public address appears in a few places below
+         (canonical, og:url, og:image, JSON-LD) and in public/sitemap.xml — update them
+         together if the site moves (e.g. to a custom domain). -->
+    <title>Kana Practice – Learn Hiragana &amp; Katakana with Stroke Order</title>
+    <meta name="description" content="Free hiragana and katakana practice. Pick the exact kana you're learning, then drill them with flashcards, multiple choice, typing, or handwriting with stroke-order checking. No sign-up, no timer." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="https://zapicojunredexter.github.io/jp-tutor/" />
+    <meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1b1917" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Kana Practice" />
+    <meta property="og:title" content="Kana Practice – Learn Hiragana & Katakana with Stroke Order" />
+    <meta property="og:description" content="Drill exactly the kana you're learning with flashcards, quizzes, typing and stroke-order handwriting practice. Free, no sign-up." />
+    <meta property="og:url" content="https://zapicojunredexter.github.io/jp-tutor/" />
+    <meta property="og:image" content="https://zapicojunredexter.github.io/jp-tutor/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Kana Practice: the hiragana あ being written stroke by stroke on a practice pad" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Kana Practice",
+        "url": "https://zapicojunredexter.github.io/jp-tutor/",
+        "image": "https://zapicojunredexter.github.io/jp-tutor/og-image.png",
+        "description": "Free hiragana and katakana practice with flashcards, multiple choice, typing and stroke-order handwriting checking.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any (web browser)",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "educationalUse": "Practice",
+        "teaches": ["Hiragana", "Katakana", "Japanese kana stroke order"],
+        "featureList": [
+          "Choose individual kana, whole rows, or every row up to a point",
+          "Flashcards, multiple choice and typing modes",
+          "Handwriting practice with stroke shape, direction and order checking",
+          "Progress tracking and weak-spot review saved in the browser"
+        ]
+      }
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet" />
-    <title>Kana Practice</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Readable without JavaScript, for crawlers and link previews.
+           React replaces all of this as soon as the app starts. -->
+      <main class="static-intro">
+        <h1>Kana Practice – learn hiragana &amp; katakana</h1>
+        <p>
+          A calm, free practice app for the Japanese kana. Pick exactly the characters you're studying –
+          single kana, whole rows, or every row up to the one you've reached – then practice just those.
+          There's no timer and no sign-up.
+        </p>
+        <h2>Four ways to practice</h2>
+        <ul>
+          <li><strong>Flashcards</strong> – flip each card and say whether you knew it.</li>
+          <li><strong>Multiple choice</strong> – pick the right reading (or the right kana) from four options.</li>
+          <li><strong>Type it</strong> – see a kana and type its romaji; Hepburn and other spellings (shi / si) are accepted.</li>
+          <li><strong>Write it</strong> – see the sound and draw the kana with a mouse, finger or stylus. Every stroke is checked for shape, direction and order, with an animated stroke-order demo when you need it.</li>
+        </ul>
+        <h2>What's covered</h2>
+        <p>
+          All 46 basic hiragana and katakana, voiced kana with dakuten and handakuten (が, ぱ…),
+          and combination kana (きゃ, しゅ, ちょ…). Missed characters come back later in the round, progress is
+          tracked per character, and a weak-spots list lets you review what you've recently missed.
+        </p>
+        <noscript><p><strong>Kana Practice needs JavaScript to run.</strong> Please enable it to start practicing.</p></noscript>
+      </main>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

@@ -149,7 +149,7 @@ export default function WritePad({ kana, onComplete }) {
 
   const showHint = !complete && demo === null && misses >= HINT_AFTER
   const current = glyph.strokes[done]
-  const strokePath = (s, props) => <path d={s.d} transform={s.transform} {...props} />
+  const strokePath = (s, key, props) => <path key={key} d={s.d} transform={s.transform} {...props} />
 
   return (
     <div className="write">
@@ -170,22 +170,21 @@ export default function WritePad({ kana, onComplete }) {
             <line x1="4" y1={BOX / 2} x2={BOX - 4} y2={BOX / 2} />
           </g>
 
-          {trace && !complete && <g className="ghost">{glyph.strokes.slice(done).map((s, i) => strokePath(s, { key: i }))}</g>}
+          {trace && !complete && <g className="ghost">{glyph.strokes.slice(done).map((s, i) => strokePath(s, i))}</g>}
 
           {showHint && current && (
             <g className="hint" key={`hint-${done}`}>
-              {strokePath(current, { pathLength: 1 })}
+              {strokePath(current, undefined, { pathLength: 1 })}
               <circle cx={current.points[0].x} cy={current.points[0].y} r="3.2" />
             </g>
           )}
 
-          <g className="ink">{glyph.strokes.slice(0, done).map((s, i) => strokePath(s, { key: i }))}</g>
+          <g className="ink">{glyph.strokes.slice(0, done).map((s, i) => strokePath(s, i))}</g>
 
           {demo !== null && (
             <g className="demo" key={demo}>
               {glyph.strokes.map((s, i) =>
-                strokePath(s, {
-                  key: i,
+                strokePath(s, i, {
                   pathLength: 1,
                   style: { animationDelay: `${i * (DEMO_STROKE_MS + DEMO_GAP_MS)}ms`, animationDuration: `${DEMO_STROKE_MS}ms` },
                 }),

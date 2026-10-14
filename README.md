@@ -21,6 +21,15 @@ Every push to `main` builds and publishes the app via `.github/workflows/deploy.
 One-time setup after creating the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 The site is then served at `https://<user>.github.io/<repo>/` (the build uses relative paths, so any repo name works).
 
+## Search engines and link previews
+
+- `index.html` holds the title, description, Open Graph / Twitter tags, JSON-LD structured data,
+  and a plain-HTML description of the app inside `#root`, so crawlers that don't run JavaScript
+  still see real content (React replaces it on load).
+- `public/og-image.png` is the 1200×630 link-preview image; `public/sitemap.xml` lists the page.
+- The site address (`https://zapicojunredexter.github.io/jp-tutor/`) appears in `index.html` and
+  `public/sitemap.xml` — update both if the site moves, e.g. to a custom domain.
+
 ## Features
 
 - **Pick your set** – tap single characters, a whole row (row label), or every row up
